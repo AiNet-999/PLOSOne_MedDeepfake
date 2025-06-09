@@ -18,7 +18,7 @@ Citations to Datasets:
 “Synthetic (DeepFake) Knee Osteoarthritis X-ray Images from Generative Adversarial Neural Networks”,
 Mendeley Data, V3, doi: 10.17632/fyybnjkw7v.3
 
-3.Gornale, Shivanand; Patravali, Pooja (2020), “Digital Knee X-ray Images”, Mendeley Data, V1, doi: 10.17632/t9ndx37v5h.1
+3. Gornale, Shivanand; Patravali, Pooja (2020), “Digital Knee X-ray Images”, Mendeley Data, V1, doi: 10.17632/t9ndx37v5h.1
 
 
 Steps To Run:
