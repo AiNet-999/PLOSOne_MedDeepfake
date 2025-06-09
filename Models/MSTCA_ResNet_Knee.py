@@ -20,42 +20,38 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.layers import (
     Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Reshape,
     LeakyReLU, GlobalAveragePooling2D, Multiply, Layer, MultiHeadAttention,
-    LayerNormalization, Add, Concatenate, BatchNormalization  
+    LayerNormalization, BatchNormalization, Add, Concatenate,SpatialDropout2D
 )
 
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import CSVLogger
 
+from tensorflow.keras.regularizers import l2
 warnings.filterwarnings('ignore')
 
 
 #https://github.com/kobiso/CBAM-keras
 #https://github.com/titu1994/keras-squeeze-excite-network
 
-class ResidualBlock(Layer):
-    def __init__(self, filters, kernel_size=3, stride=1):
-        super(ResidualBlock, self).__init__()
-        self.conv1 = Conv2D(filters, kernel_size=kernel_size, padding='same', strides=stride)
-        self.bn1 = BatchNormalization()
-        self.relu = LeakyReLU(alpha=0.05)
-        self.conv2 = Conv2D(filters, kernel_size=kernel_size, padding='same', strides=stride)
-        self.bn2 = BatchNormalization()
+def ResidualBlock(filters):
+    def block(x_input):
+        x = Conv2D(filters, (3, 3), padding='same', kernel_regularizer=l2(1e-4))(x_input)
+        x = BatchNormalization()(x)
+        x = LeakyReLU(alpha=0.05)(x)
+        x = SpatialDropout2D(0.2)(x)
 
-        
-        self.match_dimensions = Conv2D(filters, kernel_size=1, strides=stride)
-        self.bn_match = BatchNormalization()
+        x = Conv2D(filters, (3, 3), padding='same', kernel_regularizer=l2(1e-4))(x)
+        x = BatchNormalization()(x)
 
-    def call(self, inputs):
-        shortcut = self.match_dimensions(inputs) 
-        shortcut = self.bn_match(shortcut)  
-        x = self.conv1(inputs)
-        x = self.bn1(x) 
-        x = self.relu(x)
-        x = self.conv2(x)
-        x = self.bn2(x)  
-        x += shortcut  
-        return self.relu(x)
+        # If number of filters doesn't match, project input
+        if x_input.shape[-1] != filters:
+            x_input = Conv2D(filters, (1,1), padding='same', kernel_regularizer=l2(1e-4))(x_input)
+            x_input = BatchNormalization()(x_input)
 
+        x = Add()([x, x_input])
+        x = LeakyReLU(alpha=0.05)(x)
+        return x
+    return block
 
 class AttentionModule(Layer):
     def __init__(self, num_heads):
