@@ -58,7 +58,7 @@ python build_deepfake_data.py --source_root "D:/Data" --output_dir "D:/KneeMedDa
 # 🧠 Train and Evaluate Models
 # Navigate to the Models folder and run the training scripts.
 # Ensure paths to the dataset are set correctly inside the scripts.
-# These scripts will train, test, and save the ROC curves, confusion matrix, and training curves.
+# These scripts will train, test, and save the ROC curves, confusion matrix, and training curves.```
 
 
    
