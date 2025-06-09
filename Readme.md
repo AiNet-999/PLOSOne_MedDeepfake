@@ -22,7 +22,7 @@ The datasets are publicly available
    Mendeley Data, V1. DOI: [10.17632/t9ndx37v5h.1](https://doi.org/10.17632/t9ndx37v5h.1)
 
 
-**Instructions:**
+**Instructions:** 
 1. First, download the datasets from the corresponding links.
 2. For CT-GAN dataset, first run preprocessing.py. It will convert .DICOM files into corresponding .jpg slices for each scan and save them into corresponding folders.
    !python preprocessing.py --dataset_dir D:/archive --output_dir D:/processed_output
