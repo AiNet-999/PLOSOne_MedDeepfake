@@ -20,8 +20,9 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.layers import (
     Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Reshape,
     LeakyReLU, GlobalAveragePooling2D, Multiply, Layer, MultiHeadAttention,
-    LayerNormalization, Add, Concatenate
+    LayerNormalization, Add, Concatenate, BatchNormalization  
 )
+
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import CSVLogger
 
@@ -183,20 +184,21 @@ def get_hybrid_model(input_shape):
     attn_output = Reshape((num_patches, patch_depth))(attn_output)
     x = Reshape((num_patches, patch_depth, 1))(attn_output)
     x = ResidualBlock(32)(x)
-    x = SEBlock(32)(x)  
+    x = SEBlock()(x)  
     x = MaxPooling2D(2, 2)(x)
 
     x = ResidualBlock(64)(x)
-    x = SEBlock(64)(x)  
+    x = SEBlock()(x)  
     x = MaxPooling2D(2, 2)(x)
 
     x = ResidualBlock(128)(x)
-    x = SEBlock(128)(x) 
+    x = SEBlock()(x) 
     x = MaxPooling2D(2, 2)(x)
 
     x = ResidualBlock(256)(x)
-    x = SEBlock(256)(x)  
+    x = SEBlock()(x)  
     x = MaxPooling2D(2, 2)(x)
+    
     x = Flatten()(x)
     x = Dense(512)(x)
     x = LeakyReLU(alpha=0.05)(x)
