@@ -80,27 +80,6 @@ class SEBlock(Layer):
         return Multiply()([inputs, se])
 
 
-class SEBlock(tf.keras.layers.Layer):
-    def __init__(self, reduction_ratio=16, **kwargs):
-        super(SEBlock, self).__init__(**kwargs)
-        self.reduction_ratio = reduction_ratio
-
-    def build(self, input_shape):
-        channel_dim = input_shape[-1]
-        self.fc1 = Dense(channel_dim // self.reduction_ratio, activation='relu')
-        self.fc2 = Dense(channel_dim, activation='sigmoid')
-
-    def call(self, inputs):
-        se = tf.reduce_mean(inputs, axis=[1, 2], keepdims=True)
-        se = self.fc1(se)
-        se = self.fc2(se)
-
-     
-        se = Reshape((1, 1, K.int_shape(inputs)[-1]))(se)
-
-      
-        return Multiply()([inputs, se])
-
 def load_and_preprocess_images(directory, label, img_rows=512, img_cols=512):
     images = []
     labels = []
@@ -124,8 +103,7 @@ X_test, Y_test = [], []
 data_dirs = {
     '/kaggle/input/kneemeddataset/KneeMedDataset/deepfake': 0,
     '/kaggle/input/kneemeddataset/KneeMedDataset/real': 1
-    #'/kaggle/input/mydataset/Dataset-Lungs/Binary/Test/deepfake': 0,
-   # '/kaggle/input/mydataset/Dataset-Lungs/Binary/Test/real': 1
+   
 }
 
 for directory, label in data_dirs.items():
@@ -198,16 +176,16 @@ def get_hybrid_model(input_shape):
     x = Reshape((num_patches, patch_depth, 1))(attn_output)
     x = VGGBlock(num_convs=1, filters=32)(x)
  
-    x = SEBlock(32)(x)
+    x = SEBlock()(x)
     x = VGGBlock(num_convs=1, filters=64)(x)  
    
-    x = SEBlock(64)(x)  
+    x = SEBlock()(x)  
     x = VGGBlock(num_convs=1, filters=128)(x)
  
-    x = SEBlock(128)(x)
+    x = SEBlock()(x)
     x = VGGBlock(num_convs=1, filters=256)(x) 
     
-    x = SEBlock(256)(x) 
+    x = SEBlock()(x) 
 
     x = Flatten()(x)
     x = Dense(512)(x)
