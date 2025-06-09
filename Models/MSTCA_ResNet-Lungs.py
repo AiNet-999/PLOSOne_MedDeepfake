@@ -72,22 +72,6 @@ class AttentionModule(Layer):
         attn_output = self.attention(patches, patches)
         return self.layer_norm(attn_output + patches)  
         
-class VGGBlock(Layer):
-    def __init__(self, num_convs, filters, **kwargs):
-        super(VGGBlock, self).__init__(**kwargs)
-        self.num_convs = num_convs
-        self.filters = filters
-        self.convs = [Conv2D(filters, kernel_size=3, padding='same', activation='relu') for _ in range(num_convs)]
-        self.pool = MaxPooling2D(pool_size=(2, 2))
-
-    def call(self, inputs):
-        x = inputs
-        for conv in self.convs:
-            x = conv(x)
-        return self.pool(x) 
-
-
-
 
 class SEBlock(Layer):
     def __init__(self, ratio=16):
