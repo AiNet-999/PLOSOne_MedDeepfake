@@ -1,20 +1,13 @@
-
 import os
 import random
 import numpy as np
-
 SEED = 42
-
 os.environ['PYTHONHASHSEED'] = str(SEED)              
 os.environ['TF_DETERMINISTIC_OPS'] = '1'             
-
 random.seed(SEED)
 np.random.seed(SEED)
-
 import tensorflow as tf
 tf.random.set_seed(SEED)
-
-
 import argparse
 import cv2
 import numpy as np
