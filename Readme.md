@@ -68,6 +68,9 @@ python extract_samples.py --dataset_dir ./dataset --processed_dir ./processed_ou
 python extract_samples.py --dataset_dir ./dataset --processed_dir ./processed_output1/exp2_preprocessed --output_dir ./DatasetLungs/Test/ --class_mode binary --offset_start -10 --offset_end 10
 After that, run file model_exp1-exp2.py.
 
+
+**NOte**: you can install dependencies as pip install -r requirements.txt
+
 ```
 
 
