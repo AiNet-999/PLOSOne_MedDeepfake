@@ -1,11 +1,26 @@
+
 import os
+import random
+import numpy as np
+
+SEED = 42
+
+os.environ['PYTHONHASHSEED'] = str(SEED)              
+os.environ['TF_DETERMINISTIC_OPS'] = '1'             
+
+random.seed(SEED)
+np.random.seed(SEED)
+
+import tensorflow as tf
+tf.random.set_seed(SEED)
+
+
 import argparse
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-import random
 import warnings
 import pandas as pd
 from sklearn.model_selection import train_test_split, KFold
@@ -13,8 +28,7 @@ from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score, matthews_corrcoef,
     roc_curve, roc_auc_score, confusion_matrix, classification_report
 )
-from tensorflow.keras.regularizers import l2
-import tensorflow as tf
+
 from tensorflow.keras import backend as K
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.layers import (
@@ -30,8 +44,8 @@ from keras.utils import to_categorical
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import roc_auc_score, roc_curve, auc
 from itertools import cycle
-from tensorflow.keras.layers import Conv2D
 warnings.filterwarnings('ignore')
+
 
 
 #https://github.com/kobiso/CBAM-keras
@@ -55,6 +69,27 @@ class DenseBlock(Layer):
             x = Concatenate(axis=-1)(outputs) 
         return x
 
+
+from tensorflow.keras.regularizers import l2
+
+def ResidualBlock(filters):
+    def block(x_input):
+        x = Conv2D(filters, (3, 3), padding='same', kernel_regularizer=l2(1e-4))(x_input)
+        x = BatchNormalization()(x)
+        x = LeakyReLU(alpha=0.05)(x)
+
+        x = Conv2D(filters, (3, 3), padding='same', kernel_regularizer=l2(1e-4))(x)
+        x = BatchNormalization()(x)
+
+        x = Add()([x, x_input])
+        x = LeakyReLU(alpha=0.05)(x)
+        return x
+    return block
+
+
+
+
+from tensorflow.keras.layers import Conv2D
 
 def ResidualBlock(filters):
     def block(x_input):
@@ -243,19 +278,14 @@ def get_hybrid_model(input_shape):
     x = Reshape((num_patches, patch_depth, 1))(attn_output)
     
     """x = VGGBlock(num_convs=1, filters=32)(x)
- 
     x = SEBlock()(x)
     x = VGGBlock(num_convs=1, filters=64)(x)  
-   
     x = SEBlock()(x)  
     x = VGGBlock(num_convs=1, filters=128)(x)
- 
     x = SEBlock()(x)
     x = VGGBlock(num_convs=1, filters=256)(x) 
-    
     x = SEBlock()(x)
 
-    
     x = ResidualBlock(32)(x)
     x = SEBlock()(x)  
     x = MaxPooling2D(2, 2)(x)
@@ -284,7 +314,7 @@ def get_hybrid_model(input_shape):
     x = DenseBlock(num_layers=3, growth_rate=256)(x)  # Fourth dense block
     x = SEBlock()(x)  
     x = MaxPooling2D(2, 2)(x)
-   
+    
     x = Flatten()(x)
     x = Dense(512)(x)
     x = LeakyReLU(alpha=0.05)(x)
@@ -321,8 +351,8 @@ history=model.fit(
         X_train, Y_train,
         batch_size=8,
         epochs=60,
-        validation_split=0.1,
-        shuffle=True
+        #validation_split=0.1,
+        #shuffle=False
     )
 
 
@@ -373,39 +403,8 @@ class_report = classification_report(Y_test, (predicted_probabilities > 0.5).ast
 print("Classification Report:\n", class_report)
 
 
-print("\nOverall Metrics (Mean ± Std):")
+print("\nOverall Metrics:")
 for metric, values in metrics.items():
     mean = np.mean(values)
-    std_dev = np.std(values)
-    print(f"{metric.capitalize()}: {mean:.4f} ± {std_dev:.4f}")
+    print(f"{metric.capitalize()}: {mean:.4f}")
 
-import matplotlib.pyplot as plt  
-plt.style.use('bmh')
-plt.figure(figsize=(16, 6))
-
-plt.subplot(1, 2, 1)
-plt.plot(history.history['accuracy'], label='Train Accuracy', color='blue', linestyle='-', marker='o', markersize=5)
-plt.plot(history.history['val_accuracy'], label='Validation Accuracy', color='orange', linestyle='--', marker='x', markersize=5)
-plt.title('Model Accuracy', fontsize=18)
-plt.xlabel('Epochs', fontsize=18)
-plt.ylabel('Accuracy', fontsize=18)
-plt.xticks(fontsize=18)
-plt.yticks(fontsize=18)
-plt.ylim(0, 1.1) 
-plt.grid(linewidth=2)
-plt.legend(fontsize=18)
-
-plt.subplot(1, 2, 2)
-plt.plot(history.history['loss'], label='Train Loss', color='red', linestyle='-', marker='o', markersize=5)
-plt.plot(history.history['val_loss'], label='Validation Loss', color='green', linestyle='--', marker='x', markersize=5)
-plt.title('Model Loss', fontsize=18)
-plt.xlabel('Epochs', fontsize=18)
-plt.ylabel('Loss', fontsize=18)
-plt.xticks(fontsize=18)
-plt.yticks(fontsize=18)
-plt.grid(linewidth=2)
-plt.legend(fontsize=18)
-
-
-plt.savefig('training_validation_curves1.png', dpi=1000, bbox_inches='tight')
-plt.show()
