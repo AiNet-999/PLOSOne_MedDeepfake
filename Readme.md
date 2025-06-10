@@ -49,11 +49,11 @@ python extract_samples.py --dataset_dir ./dataset --processed_dir ./processed_ou
 # 🦵 Preprocess Knee X-ray Dataset
 # Preprocess and generate real and DeepFake Knee X-ray data samples.
 
-python enhance_knee_images.py --input_root "./KneeXrayData/ClsKLData" --output_root "./KneePreprocessed"
+python enhance_knee_images.py --input_root ./KneeXrayData/ClsKLData --output_root ./KneePreprocessed
 
-python build_real_data.py --source_root "./KneePreprocessed" --output_dir "./KneePreprocessed/real" --num_images 2500
+python build_real_data.py --source_root ./KneePreprocessed --output_dir ./KneePreprocessed/real --num_images 2500
 
-python build_deepfake_data.py --source_root "./Data" --output_dir "./KneeMedDataset/deepfake" --num_images 3000
+python build_deepfake_data.py --source_root ./Dataset_Knee --output_dir ./KneeMedDataset/deepfake --num_images 3000
 
 # 🧠 Train and Evaluate Models
 # Navigate to the Models folder and run the training scripts.
@@ -63,9 +63,10 @@ python build_deepfake_data.py --source_root "./Data" --output_dir "./KneeMedData
 Additional Test:
 you can consider seperate division i.e., EXP1_Blind and EXP2_OPEN of CT-GAN dataset as train and test sets:
 python generate_patient_slices.py --dataset_dir ./dataset --output_dir ./preprocessed_output1
-and then run:
+and afterthat run:
 python extract_samples.py --dataset_dir ./dataset --processed_dir ./processed_output1/exp1_preprocessed --output_dir ./DatasetLungs/Train/ --class_mode binary --offset_start -10 --offset_end 10
 python extract_samples.py --dataset_dir ./dataset --processed_dir ./processed_output1/exp2_preprocessed --output_dir ./DatasetLungs/Test/ --class_mode binary --offset_start -10 --offset_end 10
+After that, run file model_exp1-exp2.py.
 
 ```
 
