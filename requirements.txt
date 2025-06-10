@@ -4,6 +4,6 @@ matplotlib
 seaborn
 opencv-python
 scikit-learn
-tensorflow
+tensorflow==2.18.0
 keras
 pydicom
