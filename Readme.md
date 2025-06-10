@@ -4,7 +4,7 @@ The datasets are publicly available
 
 2. Synthetic Knee Deepfake images Dataset Available at https://data.mendeley.com/datasets/fyybnjkw7v/3
    
-3. Knee X-ray Real Images Dataset Available at https://data.mendeley.com/datasets/t9ndx37v5h/1 
+3. Knee X-ray Real Images Dataset Available at https://data.mendeley.com/datasets/56rmx5bjcr/1
 
 ### 📚 **Citations to Datasets**
 
